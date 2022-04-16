@@ -1,45 +1,35 @@
-import { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
+import React from "react";
+import Comment from "./Comment";
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.jsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
-    </div>
-  )
+class App extends React.Component {
+  constructor() {
+    super();
+    this.comments = [
+      {
+        id: 1,
+        author: { name: "amyrobson", avatarUrl: "/images/avatars/image-amyrobson.png" },
+        body: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium dignissimos rerum error ea itaque! Magnam nesciunt optio mollitia minima similique recusandae exercitationem.",
+        created_at: "2022-04-16 20:15:33",
+        likesCount: 12,
+      },
+      {
+        id: 2,
+        author: { name: "maxblagun", avatarUrl: "/images/avatars/image-maxblagun.png" },
+        body: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium dignissimos rerum error ea itaque! Magnam nesciunt optio mollitia minima similique recusandae exercitationem.",
+        created_at: "2022-04-16 20:22:12",
+        likesCount: 7,
+      },
+    ];
+  }
+  render() {
+    return (
+      <div className="flex flex-col gap-4">
+        {this.comments.map((comment) => (
+          <Comment comment={comment} key={comment.id} />
+        ))}
+      </div>
+    );
+  }
 }
 
-export default App
+export default App;
