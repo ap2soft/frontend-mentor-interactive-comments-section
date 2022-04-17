@@ -3,6 +3,7 @@ import React from "react";
 import Avatar from "../User/Avatar";
 import Card from "../Card";
 import commentsManager from "../../commentsManager";
+import FormSubmitButton from "./FormSubmitButton";
 
 class Form extends React.Component {
   constructor(props) {
@@ -11,7 +12,8 @@ class Form extends React.Component {
     this.manager = new commentsManager();
 
     this.user = props.comment?.user || this.manager.getCurrentUser();
-    this.comment = props.comment?.body || "";
+
+    this.state = { comment: props.comment?.body || "" };
 
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
@@ -19,19 +21,23 @@ class Form extends React.Component {
   }
 
   onChange(event) {
-    this.setState(() => (this.comment = event.target.value));
+    this.setState({ comment: event.target.value });
   }
 
   onSubmit(event) {
     event.preventDefault();
 
+    if (!this.state.comment.length) return;
+
     this.manager.send({
       author: this.user,
-      body: this.comment,
+      body: this.state.comment,
       likesCount: 0,
       id: Date.now(),
       createdAt: new Date(),
     });
+
+    this.setState({ comment: "" });
 
     this.onSend && this.onSend();
   }
@@ -40,22 +46,19 @@ class Form extends React.Component {
     return (
       <Card className={this.props.className}>
         <form onSubmit={this.onSubmit}>
-          <textarea
-            className="w-full resize-none rounded-md border border-gray-light px-4 py-2 transition focus-within:border-gray hover:border-gray focus:outline-none"
-            placeholder="Add a comment..."
-            defaultValue={this.comment}
-            onChange={this.onChange}
-          ></textarea>
-          <div className="mt-4 flex justify-between">
+          <div className="tablet: flex tablet:items-start tablet:gap-4">
+            <Avatar user={this.user} className="hidden tablet:block" />
+            <textarea
+              className="w-full resize-none rounded-md border border-gray-light px-4 py-2 transition focus-within:border-gray hover:border-gray focus:outline-none"
+              placeholder="Add a comment..."
+              value={this.state.comment}
+              onChange={this.onChange}
+            ></textarea>
+            <FormSubmitButton className="hidden tablet:block" />
+          </div>
+          <div className="mt-4 flex justify-between tablet:hidden">
             <Avatar user={this.user} />
-            <button
-              type="submit"
-              className={`rounded-md px-4 py-2 font-bold uppercase text-white transition hover:bg-blue-light ${
-                this.comment.length > 0 ? "bg-blue" : "bg-blue-light"
-              }`}
-            >
-              Send
-            </button>
+            <FormSubmitButton />
           </div>
         </form>
       </Card>

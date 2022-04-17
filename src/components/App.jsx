@@ -22,7 +22,7 @@ class App extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className="mx-auto max-w-2xl">
         <CommentList comments={this.comments} currentUser={this.currentUser} />
         <CommentForm className="mt-6" onSend={this.onSend} />
 

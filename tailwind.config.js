@@ -2,6 +2,7 @@ module.exports = {
   content: ["index.html", "src/**/*.{js,jsx}"],
   theme: {
     screens: {
+        tablet: '768px',
         desktop: '1440px',
     },
     colors: {
