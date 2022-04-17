@@ -1,4 +1,7 @@
 import React from "react";
+import Card from "./Card";
+import Avatar from "./Avatar";
+import { format } from "timeago.js";
 
 class Comment extends React.Component {
   render() {
@@ -6,11 +9,11 @@ class Comment extends React.Component {
     const { author } = comment;
 
     return (
-      <div className="rounded-md bg-white p-4">
+      <Card>
         <div className="flex gap-4">
-          <img src={author.avatarUrl} alt={author.name} className="h-8 w-8" />
+          <Avatar user={author} />
           <span className="font-bold text-gray-dark">{author.name}</span>
-          <span>1 month ago</span>
+          <time dateTime={comment.createdAt}>{format(comment.createdAt)}</time>
         </div>
         <div className="mt-4">{comment.body}</div>
         <div className="mt-4 flex justify-between">
@@ -46,7 +49,7 @@ class Comment extends React.Component {
             <span>Reply</span>
           </button>
         </div>
-      </div>
+      </Card>
     );
   }
 }
