@@ -1,4 +1,4 @@
-import commentsManager from "./commentsManager";
+import commentsManager from "../../commentsManager";
 
 const seed = async () => {
   const manager = new commentsManager();
@@ -7,7 +7,7 @@ const seed = async () => {
   window.location.reload();
 };
 
-const CommentsSeeder = ({ className }) => {
+const Seeder = ({ className }) => {
   return (
     <div className={`flex justify-center ${className}`}>
       <button className="text-blue hover:text-blue-light" onClick={seed}>
@@ -17,4 +17,4 @@ const CommentsSeeder = ({ className }) => {
   );
 };
 
-export default CommentsSeeder;
+export default Seeder;

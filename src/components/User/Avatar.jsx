@@ -3,7 +3,7 @@ function Avatar({ user }) {
     <img
       src={user.avatar}
       alt={`${user.name}'s Avatar`}
-      className="h-8 w-8 rounded-full"
+      className="h-8 w-8 rounded-full shadow-inner shadow-gray"
     />
   );
 }

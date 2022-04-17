@@ -1,10 +1,10 @@
 import { comment } from "postcss";
 import React from "react";
-import Avatar from "./Avatar";
-import Card from "./Card";
-import commentsManager from "./commentsManager";
+import Avatar from "../User/Avatar";
+import Card from "../Card";
+import commentsManager from "../../commentsManager";
 
-class CommentForm extends React.Component {
+class Form extends React.Component {
   constructor(props) {
     super(props);
 
@@ -63,4 +63,4 @@ class CommentForm extends React.Component {
   }
 }
 
-export default CommentForm;
+export default Form;
