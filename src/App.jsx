@@ -1,32 +1,41 @@
 import React from "react";
+import commentsManager from "./commentsManager";
 import Comment from "./Comment";
+import CommentForm from "./CommentForm";
+import CommentsSeeder from "./CommentsSeeder";
 
 class App extends React.Component {
   constructor() {
     super();
-    this.comments = [
-      {
-        id: 1,
-        author: { name: "amyrobson", avatarUrl: "/images/avatars/image-amyrobson.png" },
-        body: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium dignissimos rerum error ea itaque! Magnam nesciunt optio mollitia minima similique recusandae exercitationem.",
-        created_at: "2022-04-16 20:15:33",
-        likesCount: 12,
-      },
-      {
-        id: 2,
-        author: { name: "maxblagun", avatarUrl: "/images/avatars/image-maxblagun.png" },
-        body: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium dignissimos rerum error ea itaque! Magnam nesciunt optio mollitia minima similique recusandae exercitationem.",
-        created_at: "2022-04-16 20:22:12",
-        likesCount: 7,
-      },
-    ];
+    this.commentsManager = new commentsManager();
+    this.comments = this.commentsManager.getAll();
+    this.currentUser = this.commentsManager.getCurrentUser();
+
+    this.onSend = this.onSend.bind(this);
   }
+
+  onSend() {
+    console.log("parent received onSend");
+    this.comments = this.setState(
+      () => (this.comments = this.commentsManager.getAll())
+    );
+  }
+
   render() {
     return (
-      <div className="flex flex-col gap-4">
-        {this.comments.map((comment) => (
-          <Comment comment={comment} key={comment.id} />
-        ))}
+      <div>
+        <div className="flex flex-col gap-4">
+          {!this.comments.length > 0 && (
+            <p className="text-center text-sm italic text-gray">
+              No comments yet.
+            </p>
+          )}
+          {this.comments.map((comment) => (
+            <Comment comment={comment} key={comment.id} />
+          ))}
+        </div>
+        <CommentForm className="mt-6" onSend={this.onSend} />
+        <CommentsSeeder className="mt-6 border-y border-gray py-4" />
       </div>
     );
   }
