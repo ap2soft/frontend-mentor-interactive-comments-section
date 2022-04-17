@@ -1,12 +1,13 @@
 import { IconPlus } from "../../Icons";
+import AbstractButton from "./AbstractButton";
 
-export default function UpvoteButton({ className, onClick }) {
-  return (
-    <button
-      className={`grid h-10 tablet:h-8 w-10 place-content-center bg-gray-light font-bold text-blue-light transition hover:text-blue ${className}`}
-      onClick={onClick}
-    >
-      <IconPlus className="h-3 w-3" />
-    </button>
-  );
-}
+const UpvoteButton = ({ className, onClick }) => (
+  <AbstractButton
+    className={`rounded-tl-md rounded-bl-md tablet:rounded-bl-none tablet:rounded-tr-md ${className}`}
+    onClick={onClick}
+  >
+    <IconPlus className="h-3 w-3" />
+  </AbstractButton>
+);
+
+export default UpvoteButton;

@@ -7,14 +7,12 @@ const seed = async () => {
   window.location.reload();
 };
 
-const Seeder = ({ className }) => {
+export const Seeder = ({ className }) => {
   return (
     <div className={`flex justify-center ${className}`}>
       <button className="text-blue hover:text-blue-light" onClick={seed}>
-        Seed Comments
+        Reseed Comments
       </button>
     </div>
   );
 };
-
-export default Seeder;

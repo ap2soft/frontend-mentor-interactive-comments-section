@@ -1,7 +1,6 @@
-import { comment } from "postcss";
 import React from "react";
-import Avatar from "../User/Avatar";
-import Card from "../Card";
+import { Avatar } from "../User/Avatar";
+import { Card } from "../Card";
 import commentsManager from "../../commentsManager";
 import FormSubmitButton from "./FormSubmitButton";
 

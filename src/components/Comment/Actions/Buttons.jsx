@@ -1,18 +1,22 @@
-import DeleteButton from "./Delete";
-import EditButton from "./Edit";
-import ReplyButton from "./Reply";
+import { DeleteButton } from "./DeleteButton";
+import { EditButton } from "./EditButton";
+import { ReplyButton } from "./ReplyButton";
 
-export default function Buttons({ className, canManage }) {
-  return (
-    <div className={`flex ${className}`}>
-      {canManage ? (
-        <div className="flex shrink-0 gap-4 tablet:gap-6">
-          <DeleteButton />
-          <EditButton />
-        </div>
-      ) : (
-        <ReplyButton />
-      )}
-    </div>
-  );
-}
+export const Buttons = ({
+  className,
+  canManage,
+  deleteHandler,
+  editHandler,
+  replyHandler,
+}) => (
+  <div className={`flex ${className}`}>
+    {canManage ? (
+      <div className="flex shrink-0 gap-4 tablet:gap-6">
+        <DeleteButton onClick={deleteHandler} />
+        <EditButton onClick={editHandler} />
+      </div>
+    ) : (
+      <ReplyButton onClick={replyHandler} />
+    )}
+  </div>
+);

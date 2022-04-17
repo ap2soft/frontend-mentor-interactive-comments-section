@@ -1,12 +1,13 @@
 import { IconMinus } from "../../Icons";
+import AbstractButton from "./AbstractButton";
 
-export default function DownvoteButton({ className, onClick }) {
-  return (
-    <button
-      className={`grid h-10 tablet:h-8 w-10 place-content-center bg-gray-light font-bold text-blue-light transition hover:text-blue ${className}`}
-      onClick={onClick}
-    >
-      <IconMinus className="h-3 w-3" />
-    </button>
-  );
-}
+const DownvoteButton = ({ className, onClick }) => (
+  <AbstractButton
+    className={`rounded-tr-md rounded-br-md tablet:rounded-tr-none tablet:rounded-bl-md ${className}`}
+    onClick={onClick}
+  >
+    <IconMinus className="h-3 w-3" />
+  </AbstractButton>
+);
+
+export default DownvoteButton;

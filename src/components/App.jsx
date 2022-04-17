@@ -1,8 +1,8 @@
 import React from "react";
 import commentsManager from "../commentsManager";
 import CommentForm from "./Comment/Form";
-import CommentList from "./Comment/List";
-import CommentSeeder from "./Comment/Seeder";
+import { List as CommentList } from "./Comment/List";
+import { Seeder as CommentSeeder } from "./Comment/Seeder";
 
 class App extends React.Component {
   constructor() {
