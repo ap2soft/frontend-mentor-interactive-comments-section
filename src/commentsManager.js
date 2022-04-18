@@ -53,6 +53,13 @@ class commentsManager {
       JSON.stringify([...this.getAll(), comment])
     );
   }
+
+  deleteComment(commentId) {
+    localStorage.setItem(
+      "comments",
+      JSON.stringify(this.getAll().filter(({ id }) => id !== commentId))
+    );
+  }
 }
 
 export default commentsManager;

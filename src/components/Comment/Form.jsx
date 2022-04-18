@@ -28,17 +28,9 @@ class Form extends React.Component {
 
     if (!this.state.comment.length) return;
 
-    this.manager.send({
-      author: this.user,
-      body: this.state.comment,
-      likesCount: 0,
-      id: Date.now(),
-      createdAt: new Date(),
-    });
+    this.onSend && this.onSend(this.state);
 
     this.setState({ comment: "" });
-
-    this.onSend && this.onSend();
   }
 
   render() {

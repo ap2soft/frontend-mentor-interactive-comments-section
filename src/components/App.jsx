@@ -5,28 +5,54 @@ import { List as CommentList } from "./Comment/List";
 import { Seeder as CommentSeeder } from "./Comment/Seeder";
 
 class App extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+
     this.commentsManager = new commentsManager();
-    this.comments = this.commentsManager.getAll();
-    this.currentUser = this.commentsManager.getCurrentUser();
+
+    this.state = {
+      comments: this.commentsManager.getAll(),
+      currentUser: this.commentsManager.getCurrentUser(),
+    };
 
     this.onSend = this.onSend.bind(this);
+    this.onDelete = this.onDelete.bind(this);
   }
 
-  onSend() {
-    this.comments = this.setState(
-      () => (this.comments = this.commentsManager.getAll())
-    );
+  reloadComments() {
+    this.setState({ comments: this.commentsManager.getAll() });
+  }
+
+  onSend({ comment }) {
+    this.commentsManager.send({
+      author: this.state.currentUser,
+      body: comment,
+      likesCount: 0,
+      id: Date.now(),
+      createdAt: new Date(),
+    });
+
+    this.reloadComments();
+  }
+
+  onDelete(commentId) {
+    this.commentsManager.deleteComment(commentId);
+
+    this.reloadComments();
   }
 
   render() {
     return (
       <div className="mx-auto max-w-2xl">
-        <CommentList comments={this.comments} currentUser={this.currentUser} />
+        <CommentList
+          comments={this.state.comments}
+          currentUser={this.state.currentUser}
+          onDeleteComment={this.onDelete}
+        />
+
         <CommentForm className="mt-6" onSend={this.onSend} />
 
-        <CommentSeeder className="mt-6 border-y border-gray py-4" />
+        <CommentSeeder className="mt-6 border-y border-blue-light py-4" />
       </div>
     );
   }
