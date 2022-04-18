@@ -1,18 +1,15 @@
-import commentsManager from "../../commentsManager";
+import { reseedComments } from "../../commentsManager";
 
-const seed = async () => {
-  const manager = new commentsManager();
-  await manager.seed(2);
+const seedHandler = async () => {
   window.scrollTo(0, 0);
+  await reseedComments(3);
   window.location.reload();
 };
 
-export const Seeder = ({ className }) => {
-  return (
-    <div className={`flex justify-center ${className}`}>
-      <button className="text-blue hover:text-blue-light" onClick={seed}>
-        Reseed Comments
-      </button>
-    </div>
-  );
-};
+export const Seeder = ({ className }) => (
+  <div className={`flex justify-center ${className}`}>
+    <button className="text-blue hover:text-blue-light" onClick={seedHandler}>
+      Reseed Comments
+    </button>
+  </div>
+);

@@ -1,16 +1,14 @@
 import React from "react";
 import { Avatar } from "../User/Avatar";
 import { Card } from "../Card";
-import commentsManager from "../../commentsManager";
+import { getCurrentUser } from "../../commentsManager";
 import FormSubmitButton from "./FormSubmitButton";
 
 class Form extends React.Component {
   constructor(props) {
     super(props);
 
-    this.manager = new commentsManager();
-
-    this.user = props.comment?.user || this.manager.getCurrentUser();
+    this.user = props.comment?.user || getCurrentUser();
 
     this.state = { comment: props.comment?.body || "" };
 
