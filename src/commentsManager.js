@@ -7,7 +7,7 @@
  */
 export const reseedComments = async (count = 10) => {
   const response = await fetch(`https://dummyjson.com/comments?limit=${count}`);
-  const data = response.json();
+  const data = await response.json();
 
   if (!data.comments) return;
 
