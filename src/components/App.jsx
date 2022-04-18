@@ -15,10 +15,10 @@ const App = () => {
 
   const reloadComments = () => setComments(getAllComments());
 
-  const sendHandler = ({ comment }) => {
+  const sendHandler = ({ body }) => {
     sendComment({
+      body,
       author: currentUser,
-      body: comment,
       likesCount: 0,
       id: Date.now(),
       createdAt: new Date(),
