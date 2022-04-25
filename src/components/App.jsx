@@ -19,7 +19,6 @@ const App = () => {
     sendComment({
       body,
       author: currentUser,
-      likesCount: 0,
       id: Date.now(),
       createdAt: new Date(),
     });
