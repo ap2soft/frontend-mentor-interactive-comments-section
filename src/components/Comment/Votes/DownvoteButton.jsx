@@ -1,9 +1,10 @@
 import { IconMinus } from "../../Icons";
 import AbstractButton from "./AbstractButton";
 
-const DownvoteButton = ({ className, onClick }) => (
+const DownvoteButton = ({ className, voted, onClick }) => (
   <AbstractButton
-    className={`rounded-tr-md rounded-br-md tablet:rounded-tr-none tablet:rounded-bl-md ${className}`}
+        className={`rounded-tr-md rounded-br-md tablet:rounded-tr-none tablet:rounded-bl-md ${className}`}
+    active={voted}
     onClick={onClick}
   >
     <IconMinus className="h-3 w-3" />

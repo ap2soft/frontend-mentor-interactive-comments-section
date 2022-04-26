@@ -1,7 +1,6 @@
 /**
  * Get dummy comments from API
- * - randomize date and likes count
- * - set dummy user avatar
+ * - randomize date and votes
  * @param {int} count Count of comments to retrieve
  * @returns
  */
@@ -85,29 +84,31 @@ const getRandomElement = (array) =>
 
 export const getAllComments = () => getItem("comments", "[]");
 
+export const getUsers = () => getItem("users", "[]");
+
 export const getCurrentUser = () => getItem("currentUser", "{}");
 
-export const getLikesForComment = (commentId) =>
-  getItem("likes", "[]").filter((like) => like.comment_id === commentId);
+export const getVotesForComment = (commentId) =>
+  getItem("votes", "[]").filter((vote) => vote.commentId === commentId);
 
 export const sendComment = (comment) =>
   storeComments([...getAllComments(), comment]);
 
-export const upvoteComment = (commentId) => {
-  storeVoteForComment(commentId, getCurrentUser.id, "up");
+export const upvoteComment = (commentId, userId) => {
+  storeVoteForComment(commentId, userId, "up");
 };
 
-export const downvoteComment = (commentId) => {
-  storeVoteForComment(commentId, getCurrentUser.id, "down");
+export const downvoteComment = (commentId, userId) => {
+  storeVoteForComment(commentId, userId, "down");
 };
 
 const storeVoteForComment = (commentId, userId, vote) => {
-  let votes = getItem("likes", "[]");
+  let votes = getItem("votes", "[]");
   votes = [
-    ...votes.filter((vote) => vote.author_id !== userId),
-    { comment_id: commentId, author_id: userId, vote },
+    ...votes.filter(({ authorId }) => authorId !== userId),
+    { commentId, authorId: userId, vote },
   ];
-  setItem("likes", votes);
+  setItem("votes", votes);
 };
 
 export const deleteComment = (commentId) =>

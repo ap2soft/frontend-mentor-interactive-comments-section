@@ -1,6 +1,6 @@
+import { useState } from "react";
 import Comment from "./Comment";
 import ConfirmationModal from "../Modals/ConfirmationModal";
-import { useState } from "react";
 
 export const List = ({ comments, currentUser, onDeleteComment }) => {
   const [deleteCommentId, setDeleteCommentId] = useState(null);

@@ -1,35 +1,57 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card } from "../Card";
 import { Avatar } from "../User/Avatar";
 import { format } from "timeago.js";
-import { Likes } from "./Likes";
+import { Votes } from "./Votes";
 import { Buttons as ActionButtons } from "./Actions/Buttons";
+import {
+  upvoteComment,
+  downvoteComment,
+  getVotesForComment,
+  getUsers,
+} from "../../commentsManager";
 
 const Comment = ({ comment, currentUser, deleteHandler }) => {
+  const [votes, setVotes] = useState(getVotesForComment(comment.id));
+
+  const currentUserUpvoted = () =>
+    votes.find(
+      ({ authorId, vote }) => authorId === currentUser.id && vote === "up"
+    ) !== undefined;
+  const currentUserDownvoted = () =>
+    votes.find(
+      ({ authorId, vote }) => authorId === currentUser.id && vote === "down"
+    ) !== undefined;
+
   const upvoteHandler = () => {
-    console.log("upvoted");
+    upvoteComment(comment.id, currentUser.id);
+    setVotes(getVotesForComment(comment.id));
   };
   const downvoteHandler = () => {
-    console.log("downvoted");
+    downvoteComment(comment.id, currentUser.id);
+    setVotes(getVotesForComment(comment.id));
   };
-  const isTheAuthor = comment.author.name === currentUser.name;
+  const author = getUsers().find(({ id }) => id === comment.authorId);
+  const isTheAuthor = author.id === currentUser.id;
 
   return (
     <Card>
       <div className="flex flex-col tablet:flex-row">
-        <Likes
+        <Votes
           className="hidden tablet:block"
-          likesCount={comment.likesCount}
-          canManage={true}
+          upvotesCount={votes.filter(({ vote }) => vote === "up").length}
+          downvotesCount={votes.filter(({ vote }) => vote === "down").length}
+          upvoted={currentUserUpvoted()}
+          downvoted={currentUserDownvoted()}
           onUpvote={upvoteHandler}
           onDownvote={downvoteHandler}
         />
         <div className="tablet:ml-6 tablet:flex-1">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Avatar user={comment.author} />
+              <Avatar user={author} />
               <span className="font-bold text-gray-dark">
-                {comment.author.name}
+                {author.username}
               </span>
               {isTheAuthor && (
                 <span className="h-6 rounded bg-blue px-2 text-sm lowercase text-white">
@@ -50,9 +72,11 @@ const Comment = ({ comment, currentUser, deleteHandler }) => {
         </div>
       </div>
       <div className="mt-4 flex justify-between tablet:hidden">
-        <Likes
-          likesCount={comment.likesCount}
-          canManage={true}
+        <Votes
+          upvotesCount={votes.filter(({ vote }) => vote === "up").length}
+          downvotesCount={votes.filter(({ vote }) => vote === "down").length}
+          upvoted={currentUserUpvoted()}
+          downvoted={currentUserDownvoted()}
           onUpvote={upvoteHandler}
           onDownvote={downvoteHandler}
         />
