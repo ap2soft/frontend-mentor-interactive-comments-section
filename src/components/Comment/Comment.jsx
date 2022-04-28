@@ -4,15 +4,20 @@ import { Avatar } from "../User/Avatar";
 import { format } from "timeago.js";
 import { Votes } from "./Votes";
 import { Buttons as ActionButtons } from "./Actions/Buttons";
+import FormSubmitButton from "./FormSubmitButton";
 import {
   upvoteComment,
   downvoteComment,
+  updateComment,
   getVotesForComment,
   getUsers,
 } from "../../commentsManager";
 
 const Comment = ({ comment, currentUser, deleteHandler }) => {
   const [votes, setVotes] = useState(getVotesForComment(comment.id));
+  const [editing, setEditing] = useState(false);
+
+  const [commentBody, setCommentBody] = useState(comment.body);
 
   const currentUserUpvoted = () =>
     votes.find(
@@ -31,6 +36,13 @@ const Comment = ({ comment, currentUser, deleteHandler }) => {
     downvoteComment(comment.id, currentUser.id);
     setVotes(getVotesForComment(comment.id));
   };
+
+  const submitHandler = (event) => {
+    event.preventDefault();
+    setEditing(false);
+    updateComment(comment.id, commentBody);
+  };
+
   const author = getUsers().find(({ id }) => id === comment.authorId);
   const isTheAuthor = author.id === currentUser.id;
 
@@ -65,10 +77,29 @@ const Comment = ({ comment, currentUser, deleteHandler }) => {
             <ActionButtons
               className="hidden tablet:block"
               canManage={isTheAuthor}
+              editHandler={() => setEditing(true)}
               deleteHandler={deleteHandler}
             />
           </div>
-          <div className="mt-4">{comment.body}</div>
+          <div className="mt-4">
+            {editing ? (
+              <form onSubmit={submitHandler}>
+                <textarea
+                  className="w-full resize-none rounded-md border border-gray-light px-4 py-2 transition focus-within:border-gray hover:border-gray focus:outline-none"
+                  placeholder="Update the comment..."
+                  value={commentBody}
+                  onChange={(event) => setCommentBody(event.target.value)}
+                ></textarea>
+                <div className="flex justify-end">
+                  <FormSubmitButton disabled={!commentBody.length}>
+                    Update
+                  </FormSubmitButton>
+                </div>
+              </form>
+            ) : (
+              <div>{commentBody}</div>
+            )}
+          </div>
         </div>
       </div>
       <div className="mt-4 flex justify-between tablet:hidden">
@@ -80,7 +111,11 @@ const Comment = ({ comment, currentUser, deleteHandler }) => {
           onUpvote={upvoteHandler}
           onDownvote={downvoteHandler}
         />
-        <ActionButtons canManage={isTheAuthor} deleteHandler={deleteHandler} />
+        <ActionButtons
+          canManage={isTheAuthor}
+          editHandler={() => setEditing(true)}
+          deleteHandler={deleteHandler}
+        />
       </div>
     </Card>
   );

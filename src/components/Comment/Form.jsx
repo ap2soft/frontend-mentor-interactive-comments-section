@@ -8,8 +8,6 @@ const Form = ({ className, comment, onSend }) => {
   const user = comment?.user || getCurrentUser();
   const [commentBody, setCommentBody] = useState(comment?.body || "");
 
-  const onChange = (event) => setCommentBody(event.target.value);
-
   const onSubmit = (event) => {
     event.preventDefault();
 
@@ -29,13 +27,15 @@ const Form = ({ className, comment, onSend }) => {
             className="w-full resize-none rounded-md border border-gray-light px-4 py-2 transition focus-within:border-gray hover:border-gray focus:outline-none"
             placeholder="Add a comment..."
             value={commentBody}
-            onChange={onChange}
+            onChange={(event) => setCommentBody(event.target.value)}
           ></textarea>
-          <FormSubmitButton className="hidden tablet:block" />
+          <FormSubmitButton className="hidden tablet:block">
+            Send
+          </FormSubmitButton>
         </div>
         <div className="mt-4 flex justify-between tablet:hidden">
           <Avatar user={user} />
-          <FormSubmitButton />
+          <FormSubmitButton>Send</FormSubmitButton>
         </div>
       </form>
     </Card>
