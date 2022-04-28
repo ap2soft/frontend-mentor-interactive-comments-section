@@ -18,8 +18,8 @@ const App = () => {
   const sendHandler = ({ body }) => {
     sendComment({
       body,
-      author: currentUser,
-      likesCount: 0,
+      authorId: currentUser.id,
+      replyTo: null,
       id: Date.now(),
       createdAt: new Date(),
     });

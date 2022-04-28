@@ -2,9 +2,9 @@ import { reseedComments } from "../../commentsManager";
 
 const seedHandler = async () => {
   window.scrollTo(0, 0);
-  await reseedComments(3);
-  window.location.reload();
-};
+  await reseedComments(5);
+    window.location.reload();
+};;
 
 export const Seeder = ({ className }) => (
   <div className={`flex justify-center ${className}`}>
