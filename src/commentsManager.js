@@ -84,7 +84,10 @@ const getDummyData = async (url, params) => {
 const getRandomElement = (array) =>
   array[Math.floor(Math.random() * array.length)];
 
-export const getAllComments = () => getItem("comments", "[]");
+export const getAllComments = () =>
+  getItem("comments", "[]").sort((a, b) =>
+    a.createdAt > b.createdAt ? 1 : -1
+  );
 
 export const getUsers = () => getItem("users", "[]");
 
