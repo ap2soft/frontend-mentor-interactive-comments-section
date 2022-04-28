@@ -7,7 +7,7 @@
 export const reseedComments = async (count = 10) => {
   const users = await seedUsers();
 
-  const comments = await seedComments(users);
+  const comments = await seedComments(users, count);
 
   seedVotes(comments, users);
 };
@@ -24,7 +24,7 @@ const seedUsers = async () => {
   return users;
 };
 
-const seedComments = async (users, count = 10) => {
+const seedComments = async (users, count) => {
   const commentsData = await getDummyData("comments", {
     limit: count,
     skip: Math.floor(Math.random() * 300),
@@ -45,9 +45,11 @@ const seedComments = async (users, count = 10) => {
   });
 
   setItem("comments", comments);
+
+  const randomComment = getRandomElement(comments);
   setItem(
     "currentUser",
-    users.find(({ id }) => id === getRandomElement(comments).authorId)
+    users.find(({ id }) => id === randomComment.authorId)
   );
 
   return comments;
