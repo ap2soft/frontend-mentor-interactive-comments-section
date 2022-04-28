@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   sendComment,
+  updateComment,
   deleteComment,
   getCurrentUser,
   getAllComments,
@@ -27,6 +28,22 @@ const App = () => {
     reloadComments();
   };
 
+  const replyHandler = ({ replyTo, body }) => {
+    sendComment({
+      id: Date.now(),
+      replyTo,
+      authorId: currentUser.id,
+      body,
+      createdAt: new Date(),
+    });
+
+    reloadComments();
+  };
+
+  const updateHandler = ({ commentId, body }) => {
+    updateComment(commentId, body);
+  };
+
   const deleteHandler = (commentId) => {
     deleteComment(commentId);
 
@@ -38,7 +55,9 @@ const App = () => {
       <CommentList
         comments={comments}
         currentUser={currentUser}
-        onDeleteComment={deleteHandler}
+        onReply={replyHandler}
+        onUpdate={updateHandler}
+        onDelete={deleteHandler}
       />
 
       <CommentForm className="mt-6" onSend={sendHandler} />

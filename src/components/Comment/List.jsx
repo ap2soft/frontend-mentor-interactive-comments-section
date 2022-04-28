@@ -2,20 +2,26 @@ import { useState } from "react";
 import Comment from "./Comment";
 import ConfirmationModal from "../Modals/ConfirmationModal";
 
-export const List = ({ comments, currentUser, onDeleteComment }) => {
+export const List = ({
+  comments,
+  currentUser,
+  onReply,
+  onUpdate,
+  onDelete,
+}) => {
   const [deleteCommentId, setDeleteCommentId] = useState(null);
 
   const deleteHandler = (commentId) => setDeleteCommentId(commentId);
   const cancelDelete = () => setDeleteCommentId(null);
   const processDelete = () => {
-    onDeleteComment(deleteCommentId);
+    onDelete(deleteCommentId);
     setDeleteCommentId(null);
   };
 
   return (
     <div>
       <div className="flex flex-col gap-4">
-        {!comments.length > 0 && (
+        {!comments.length && (
           <p className="text-center text-sm italic text-gray">
             No comments yet.
           </p>
@@ -25,6 +31,8 @@ export const List = ({ comments, currentUser, onDeleteComment }) => {
             comment={comment}
             currentUser={currentUser}
             key={comment.id}
+            replyHandler={onReply}
+            updateHandler={onUpdate}
             deleteHandler={() => deleteHandler(comment.id)}
           />
         ))}

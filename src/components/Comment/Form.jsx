@@ -26,6 +26,7 @@ const Form = ({ className, comment, onSend }) => {
           <textarea
             className="w-full resize-none rounded-md border border-gray-light px-4 py-2 transition focus-within:border-gray hover:border-gray focus:outline-none"
             placeholder="Add a comment..."
+            rows="3"
             value={commentBody}
             onChange={(event) => setCommentBody(event.target.value)}
           ></textarea>
