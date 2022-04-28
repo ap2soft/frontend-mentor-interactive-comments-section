@@ -99,6 +99,15 @@ export const getVotesForComment = (commentId) =>
 export const sendComment = (comment) =>
   storeComments([...getAllComments(), comment]);
 
+export const updateComment = (commentId, body) => {
+  const allComments = getAllComments();
+  const comment = allComments.find(({ id }) => id === commentId);
+  storeComments([
+    ...allComments.filter(({ id }) => id !== commentId),
+    { ...comment, body },
+  ]);
+};
+
 export const upvoteComment = (commentId, userId) => {
   storeVoteForComment(commentId, userId, "up");
 };
