@@ -46,10 +46,14 @@ const Comment = ({
     setEditing(false);
     updateHandler({ commentId: comment.id, body: commentBody });
   };
+  const onKeyUp = (event) => {
+    if (event.ctrlKey && event.keyCode === 13) {
+      onUpdate(event);
+    }
+  };
 
   const [replying, setReplying] = useState(false);
   const onReply = ({ body }) => {
-    console.log("onReply", body);
     setReplying(false);
     replyHandler({ replyTo: comment.id, body });
   };
@@ -103,6 +107,7 @@ const Comment = ({
                     rows="3"
                     value={commentBody}
                     onChange={(event) => setCommentBody(event.target.value)}
+                    onKeyUp={onKeyUp}
                   ></textarea>
                   <div className="flex justify-end">
                     <FormSubmitButton disabled={!commentBody.length}>
@@ -135,7 +140,7 @@ const Comment = ({
       </Card>
       {replying && (
         <div className="mt-4 border-l border-blue-light pl-4 tablet:ml-10 tablet:pl-8">
-          <ReplyForm onSend={onReply} />
+          <ReplyForm onSend={onReply} onCancel={() => setReplying(false)} />
         </div>
       )}
     </div>

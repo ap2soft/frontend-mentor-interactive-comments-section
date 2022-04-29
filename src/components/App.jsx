@@ -7,6 +7,7 @@ import {
   getAllComments,
 } from "../commentsManager";
 import CommentForm from "./Comment/Form";
+import { Card } from "./Card";
 import { List as CommentList } from "./Comment/List";
 import { Seeder as CommentSeeder } from "./Comment/Seeder";
 
@@ -40,9 +41,7 @@ const App = () => {
     reloadComments();
   };
 
-  const updateHandler = ({ commentId, body }) => {
-    updateComment(commentId, body);
-  };
+  const updateHandler = ({ commentId, body }) => updateComment(commentId, body);
 
   const deleteHandler = (commentId) => {
     deleteComment(commentId);
@@ -52,6 +51,11 @@ const App = () => {
 
   return (
     <div className="mx-auto max-w-2xl">
+      {!comments.length && (
+        <Card className="text-center text-sm italic text-gray-dark">
+          No comments yet
+        </Card>
+      )}
       <CommentList
         comments={comments}
         currentUser={currentUser}

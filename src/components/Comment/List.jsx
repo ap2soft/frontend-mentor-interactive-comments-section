@@ -3,6 +3,7 @@ import Comment from "./Comment";
 import ConfirmationModal from "../Modals/ConfirmationModal";
 
 export const List = ({
+  className,
   comments,
   currentUser,
   onReply,
@@ -18,23 +19,40 @@ export const List = ({
     setDeleteCommentId(null);
   };
 
+  const getRepliesFor = (commentId) =>
+    comments.filter(({ replyTo }) => replyTo === commentId);
+
   return (
     <div>
-      <div className="flex flex-col gap-4">
-        {!comments.length && (
-          <p className="text-center text-sm italic text-gray">
-            No comments yet.
-          </p>
-        )}
+      <div className={`${className} flex flex-col gap-4`}>
         {comments.map((comment) => (
-          <Comment
-            comment={comment}
-            currentUser={currentUser}
-            key={comment.id}
-            replyHandler={onReply}
-            updateHandler={onUpdate}
-            deleteHandler={() => deleteHandler(comment.id)}
-          />
+          <div
+            key={`comment-wrapper-${comment.id}`}
+            className={
+              comment.replyTo &&
+              "border-l border-blue-light pl-4 tablet:ml-10 tablet:pl-8"
+            }
+          >
+            <Comment
+              comment={comment}
+              currentUser={currentUser}
+              key={comment.id}
+              replyHandler={onReply}
+              updateHandler={onUpdate}
+              deleteHandler={() => deleteHandler(comment.id)}
+            />
+            {getRepliesFor(comment.id) && (
+              <List
+                key={`replies-for-${comment.id}`}
+                className="mt-4"
+                comments={getRepliesFor(comment.id)}
+                currentUser={currentUser}
+                onReply={onReply}
+                onUpdate={onUpdate}
+                onDelete={onDelete}
+              />
+            )}
+          </div>
         ))}
       </div>
       <ConfirmationModal
