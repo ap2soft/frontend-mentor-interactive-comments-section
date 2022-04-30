@@ -96,6 +96,9 @@ export const getAllComments = () =>
     a.createdAt > b.createdAt ? 1 : -1
   );
 
+export const getRepliesFor = (commentId) =>
+  getAllComments().filter(({ replyTo }) => replyTo === commentId);
+
 export const getUsers = () => getItem("users", "[]");
 
 export const getCurrentUser = () => getItem("currentUser", "{}");
@@ -132,8 +135,13 @@ const storeVoteForComment = (commentId, userId, vote) => {
   setItem("votes", votes);
 };
 
-export const deleteComment = (commentId) =>
+export const deleteComment = (commentId) => {
+  // Delete all relpies comments recursively
+  getRepliesFor(commentId).forEach(({ id }) => deleteComment(id));
+
+  // Delete the comment
   storeComments(getAllComments().filter(({ id }) => id !== commentId));
+};
 
 const getItem = (name, defaultValue) =>
   JSON.parse(localStorage.getItem(name) || defaultValue);
