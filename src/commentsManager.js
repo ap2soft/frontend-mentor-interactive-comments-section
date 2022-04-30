@@ -35,9 +35,16 @@ const seedComments = async (users, count) => {
     const date = new Date();
     date.setHours(date.getHours() - Math.round(Math.random() * 24 * 3));
 
+    let replyTo = null;
+    if (Math.random() > 0.7) {
+      do {
+        replyTo = getRandomElement(commentsData.comments).id;
+      } while (replyTo === comment.id);
+    }
+
     return {
       id: comment.id,
-      replyTo: null,
+      replyTo,
       authorId: getRandomElement(users).id,
       body: comment.body,
       createdAt: date.toJSON(),
