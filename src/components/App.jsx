@@ -13,6 +13,7 @@ import { Seeder as CommentSeeder } from "./Comment/Seeder";
 
 const App = () => {
   const [comments, setComments] = useState(getAllComments());
+  const topLevelComments = comments.filter(({ replyTo }) => !replyTo);
   const currentUser = getCurrentUser();
 
   const reloadComments = () => setComments(getAllComments());
@@ -51,13 +52,13 @@ const App = () => {
 
   return (
     <div className="mx-auto max-w-2xl">
-      {!comments.length && (
+      {!topLevelComments.length && (
         <Card className="text-center text-sm italic text-gray-dark">
           No comments yet
         </Card>
       )}
       <CommentList
-        comments={comments}
+        comments={topLevelComments}
         currentUser={currentUser}
         onReply={replyHandler}
         onUpdate={updateHandler}
