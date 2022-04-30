@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Comment from "./Comment";
 import ConfirmationModal from "../Modals/ConfirmationModal";
+import { getRepliesFor } from "../../commentsManager";
 
 export const List = ({
   className,
@@ -18,9 +19,6 @@ export const List = ({
     onDelete(deleteCommentId);
     setDeleteCommentId(null);
   };
-
-  const getRepliesFor = (commentId) =>
-    comments.filter(({ replyTo }) => replyTo === commentId);
 
   return (
     <div>
