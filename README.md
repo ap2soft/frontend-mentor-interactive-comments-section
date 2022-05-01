@@ -40,8 +40,8 @@ Users should be able to:
 
 ### Links
 
-- Solution URL: [Add solution URL here](https://your-solution-url.com)
-- Live Site URL: [https://frontend-mentor-interactive-comments-section.netlify.app/](https://frontend-mentor-interactive-comments-section.netlify.app/) (Click "Reseed comments" link on the bottom of the website to start)
+- [Solution URL](https://www.frontendmentor.io/challenges/interactive-comments-section-iG1RugEG9/hub/interactive-comments-section-using-react-tailwind-css-and-vite-SJ--Qosr5)
+- [Live Site URL](https://frontend-mentor-interactive-comments-section.netlify.app/) **(Click "Reseed comments" link at the bottom of the website to start)**
 
 ### Developing
 
