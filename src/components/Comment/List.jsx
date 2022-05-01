@@ -53,16 +53,18 @@ export const List = ({
           </div>
         ))}
       </div>
-      <ConfirmationModal
-        show={deleteCommentId}
-        title="Delete comment"
-        body="Are you sure want to delete this comment? This will remove the comment and can't be undone."
-        cancelButtonText="No, cancel"
-        confirmButtonText="Yes, delete"
-        confirmButtonClasses="bg-red"
-        onCancel={cancelDelete}
-        onConfirm={processDelete}
-      />
+      {deleteCommentId && (
+        <ConfirmationModal
+          show={deleteCommentId}
+          title="Delete comment"
+          body="Are you sure want to delete this comment? This will remove the comment and can't be undone."
+          cancelButtonText="No, cancel"
+          confirmButtonText="Yes, delete"
+          confirmButtonClasses="bg-red"
+          onCancel={cancelDelete}
+          onConfirm={processDelete}
+        />
+      )}
     </div>
   );
 };
