@@ -18,22 +18,10 @@ const App = () => {
 
   const reloadComments = () => setComments(getAllComments());
 
-  const sendHandler = ({ body }) => {
-    sendComment({
-      body,
-      authorId: currentUser.id,
-      replyTo: null,
-      id: Date.now(),
-      createdAt: new Date(),
-    });
-
-    reloadComments();
-  };
-
-  const replyHandler = ({ replyTo, body }) => {
+  const sendHandler = ({ replyTo, body }) => {
     sendComment({
       id: Date.now(),
-      replyTo,
+      replyTo: replyTo || null,
       authorId: currentUser.id,
       body,
       createdAt: new Date(),
@@ -60,7 +48,7 @@ const App = () => {
       <CommentList
         comments={topLevelComments}
         currentUser={currentUser}
-        onReply={replyHandler}
+        onReply={sendHandler}
         onUpdate={updateHandler}
         onDelete={deleteHandler}
       />
