@@ -1,3 +1,3 @@
 import Votes from "./Votes";
 
-export { Votes };
+export default Votes;

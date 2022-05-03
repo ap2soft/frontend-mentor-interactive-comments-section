@@ -1,103 +1,23 @@
+import { useEffect } from "react";
+
 /**
- * Get dummy comments from API
- * - randomize date and votes
- * @param {int} count Count of comments to retrieve
- * @returns
+ * Get comments from data.json
  */
-export const reseedComments = async (count = 10) => {
-  const users = await seedUsers();
+export const reseedDatabase = async () => {
+  const data = await (await fetch("./data.json")).json();
 
-  const comments = await seedComments(users, count);
+  setItem("comments", data.comments);
 
-  seedVotes(comments, users);
+  setItem("currentUser", data.currentUser);
 };
 
-const seedUsers = async () => {
-  const usersData = await getDummyData("users", {
-    limit: 30,
-    select: "id,username,image",
-  });
-  if (!usersData.users) return;
-  const users = usersData.users;
-  setItem("users", users);
-
-  return users;
-};
-
-const seedComments = async (users, count) => {
-  const commentsData = await getDummyData("comments", {
-    limit: count,
-    skip: Math.floor(Math.random() * 300),
-  });
-  if (!commentsData.comments) return;
-
-  const comments = commentsData.comments.map((comment) => {
-    const date = new Date();
-    date.setHours(date.getHours() - Math.round(Math.random() * 24 * 3));
-
-    let replyTo = null;
-    if (Math.random() > 0.7) {
-      do {
-        replyTo = getRandomElement(commentsData.comments).id;
-      } while (replyTo === comment.id);
-    }
-
-    return {
-      id: comment.id,
-      replyTo,
-      authorId: getRandomElement(users).id,
-      body: comment.body,
-      createdAt: date.toJSON(),
-    };
-  });
-
-  setItem("comments", comments);
-
-  const randomComment = getRandomElement(comments);
-  setItem(
-    "currentUser",
-    users.find(({ id }) => id === randomComment.authorId)
-  );
-
-  return comments;
-};
-
-const seedVotes = (comments, users) => {
-  const votes = [];
-  comments.forEach((comment) => {
-    [...Array(Math.floor(Math.random() * 4)).keys()].forEach(() =>
-      votes.push({
-        commentId: comment.id,
-        authorId: getRandomElement(users).id,
-        vote: Math.random() > 0.5 ? "up" : "down",
-      })
-    );
-  });
-  setItem("votes", votes);
-
-  return votes;
-};
-
-const getDummyData = async (url, params) => {
-  const apiUrl = new URL(url, "https://dummyjson.com");
-  Object.keys(params).forEach((param) =>
-    apiUrl.searchParams.set(param, params[param])
-  );
-
-  const response = await fetch(apiUrl);
-  return await response.json();
-};
-
-const getRandomElement = (array) =>
-  array[Math.floor(Math.random() * array.length)];
-
-export const getAllComments = () =>
+export const getComments = () =>
   getItem("comments", "[]").sort((a, b) =>
     a.createdAt > b.createdAt ? 1 : -1
   );
 
 export const getRepliesFor = (commentId) =>
-  getAllComments().filter(({ replyTo }) => replyTo === commentId);
+  getComments().filter(({ replyTo }) => replyTo === commentId);
 
 export const getUsers = () => getItem("users", "[]");
 
@@ -107,31 +27,75 @@ export const getVotesForComment = (commentId) =>
   getItem("votes", "[]").filter((vote) => vote.commentId === commentId);
 
 export const sendComment = (comment) =>
-  storeComments([...getAllComments(), comment]);
+  storeComments([...getComments(), comment]);
 
-export const updateComment = (commentId, body) => {
-  const allComments = getAllComments();
-  const comment = allComments.find(({ id }) => id === commentId);
-  storeComments([
-    ...allComments.filter(({ id }) => id !== commentId),
-    { ...comment, body },
-  ]);
+export const updateComment = (content, commentId, parentCommentId) => {
+  const allComments = getComments();
+  if (parentCommentId) {
+    // Update reply with ID of commentId of the parent comment with ID = replyingTo
+    console.log(
+      `updating reply #${commentId} of parent comment #${parentCommentId}`
+    );
+    const parentComment = allComments.find(({ id }) => id === parentCommentId);
+    console.log(parentComment.id);
+    const reply = parentComment.replies.find(({ id }) => id === commentId);
+    console.log(reply.id);
+    parentComment.replies = [
+      ...parentComment.replies.filter(({ id }) => id !== reply.id),
+      { ...reply, content },
+    ];
+    storeComments([
+      ...allComments.filter(({ id }) => id !== parentComment.id),
+      parentComment,
+    ]);
+  } else {
+    // Update comment with ID of commentId
+    const comment = allComments.find(({ id }) => id === commentId);
+    storeComments([
+      ...allComments.filter(({ id }) => id !== commentId),
+      { ...comment, content },
+    ]);
+  }
 };
 
-export const upvoteComment = (commentId, userId) => {
-  storeVoteForComment(commentId, userId, "up");
+export const currentUserUpvotedComment = (commentId) =>
+  currentUsersVoteForComment(commentId)?.vote === "up";
+
+export const currentUserDownvotedComment = (commentId) =>
+  currentUsersVoteForComment(commentId)?.vote === "down";
+
+export const currentUsersVoteForComment = (commentId) => {
+  const currentUser = getCurrentUser();
+  return getVotesForComment(commentId).find(
+    ({ author }) => author === currentUser.username
+  );
 };
 
-export const downvoteComment = (commentId, userId) => {
-  storeVoteForComment(commentId, userId, "down");
+export const upvoteComment = (commentId) => {
+  storeVoteForComment(commentId, getCurrentUser().username, "up");
 };
 
-const storeVoteForComment = (commentId, userId, vote) => {
+export const downvoteComment = (commentId) => {
+  storeVoteForComment(commentId, getCurrentUser().username, "down");
+};
+
+const storeVoteForComment = (commentId, author, vote) => {
   let votes = getItem("votes", "[]");
-  votes = [
-    ...votes.filter(({ authorId }) => authorId !== userId),
-    { commentId, authorId: userId, vote },
-  ];
+  const currentVote = votes.find(
+    (v) => v.commentId === commentId && v.author === author
+  );
+
+  // Filter out the current vote
+  votes = votes.filter(
+    (v) => !(v.commentId === commentId && v.author === author)
+  );
+
+  // Add new vote if it's different from the current vote
+  // or current vote does not exist
+  if (!currentVote || currentVote.vote !== vote) {
+    votes.push({ commentId, author, vote });
+  }
+
   setItem("votes", votes);
 };
 
@@ -140,7 +104,7 @@ export const deleteComment = (commentId) => {
   getRepliesFor(commentId).forEach(({ id }) => deleteComment(id));
 
   // Delete the comment
-  storeComments(getAllComments().filter(({ id }) => id !== commentId));
+  storeComments(getComments().filter(({ id }) => id !== commentId));
 };
 
 const getItem = (name, defaultValue) =>

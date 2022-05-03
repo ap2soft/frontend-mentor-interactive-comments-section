@@ -5,7 +5,7 @@ import { format } from "timeago.js";
 import { Votes } from "./Votes";
 import { Buttons as ActionButtons } from "./Actions/Buttons";
 import FormSubmitButton from "./FormSubmitButton";
-import ReplyForm from "./Form";
+import ReplyForm from "./CommentFormentForm";
 import {
   upvoteComment,
   downvoteComment,

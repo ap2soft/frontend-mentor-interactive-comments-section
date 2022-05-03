@@ -1,31 +1,36 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   sendComment,
   updateComment,
   deleteComment,
   getCurrentUser,
-  getAllComments,
+  getComments,
+  reseedDatabase,
 } from "../commentsManager";
-import CommentForm from "./Comment/Form";
+import CommentForm from "./Comment/CommentForm";
 import { Card } from "./Card";
 import { List as CommentList } from "./Comment/List";
 import { Seeder as CommentSeeder } from "./Comment/Seeder";
 
 const App = () => {
-  const [comments, setComments] = useState(getAllComments());
-  const topLevelComments = comments.filter(({ replyTo }) => !replyTo);
+  const [comments, setComments] = useState(getComments());
+  const topLevelComments = []; //comments.filter(({ replyTo }) => !replyTo);
   const currentUser = getCurrentUser();
 
-  const reloadComments = () => setComments(getAllComments());
+  const reloadComments = () => setComments(getComments());
 
-  const sendHandler = ({ replyTo, body }) => {
-    sendComment({
-      id: Date.now(),
-      replyTo: replyTo || null,
-      authorId: currentUser.id,
-      body,
-      createdAt: new Date(),
-    });
+  const sendHandler = ({ content }) => {
+    setComments([
+      ...comments,
+      {
+        id: Date.now(),
+        content,
+        user: getCurrentUser(),
+        score: 0,
+        createdAt: new Date(),
+        replies: [],
+      },
+    ]);
 
     reloadComments();
   };
@@ -37,6 +42,10 @@ const App = () => {
 
     reloadComments();
   };
+
+  useEffect(() => {
+    if (!comments.length) reseedDatabase();
+  });
 
   return (
     <div className="mx-auto max-w-2xl">
