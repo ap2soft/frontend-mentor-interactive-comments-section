@@ -18,7 +18,7 @@ export default function Comments() {
     if (!comments.length) {
       (async function () {
         await reseedDatabase();
-        setComments(getComments());
+        reloadComments();
       })();
     }
   });
@@ -36,11 +36,11 @@ export default function Comments() {
         createdAt: new Date(),
       });
 
-      setComments(getComments());
+      reloadComments();
     }
   };
 
-  const updateHandler = () => {};
+  const reloadComments = () => setComments(getComments());
 
   return (
     <div className="grid gap-4">
@@ -48,14 +48,8 @@ export default function Comments() {
         return (
           <div key={comment.id} className="">
             <div className="grid gap-4">
-              <Comment
-                comment={comment}
-                onUpdate={() => setComments(getComments())}
-              />
-              <Replies
-                comment={comment}
-                onUpdate={() => setComments(getComments())}
-              />
+              <Comment comment={comment} onUpdate={reloadComments} />
+              <Replies comment={comment} onUpdate={reloadComments} />
             </div>
           </div>
         );

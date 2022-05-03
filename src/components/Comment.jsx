@@ -122,6 +122,8 @@ export default function Comment({ comment, parentCommentId, onUpdate }) {
             />
           </div>
         </div>
+
+        {/* Content or Update form  */}
         {(() => {
           if (editing) {
             return (
@@ -154,6 +156,7 @@ export default function Comment({ comment, parentCommentId, onUpdate }) {
             </div>
           );
         })()}
+
         <div className="flex items-center justify-between tablet:hidden">
           <Votes
             initialScore={comment.score}

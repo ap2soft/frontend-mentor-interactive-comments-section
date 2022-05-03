@@ -2,7 +2,6 @@ import { IconDelete, IconEdit, IconReply } from "./Icons";
 
 const ActionButtons = ({
   canManage,
-  editing,
   editHandler,
   replyHandler,
   deleteHandler,
