@@ -14,7 +14,12 @@ import {
   updateComment,
 } from "../commentsManager";
 
-export default function Comment({ comment, parentCommentId, onUpdate }) {
+export default function Comment({
+  comment,
+  parentCommentId,
+  onUpdate,
+  onDelete,
+}) {
   const isLegacyDateFormat = isNaN(Date.parse(comment.createdAt));
 
   const isTheAuthor = comment.user.username === getCurrentUser().username;
@@ -118,12 +123,14 @@ export default function Comment({ comment, parentCommentId, onUpdate }) {
               canManage={isTheAuthor}
               editHandler={startEditing}
               replyHandler={() => {}}
-              deleteHandler={() => {}}
+              deleteHandler={() =>
+                onDelete({ commentId: comment.id, parentCommentId })
+              }
             />
           </div>
         </div>
 
-        {/* Content or Update form  */}
+        {/* Show content or Update content form  */}
         {(() => {
           if (editing) {
             return (

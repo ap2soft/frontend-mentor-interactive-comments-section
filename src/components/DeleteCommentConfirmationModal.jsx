@@ -1,24 +1,11 @@
 import { useCallback, useEffect } from "react";
 
-const ConfirmationModal = ({
-  show,
-  title,
-  body,
-  cancelButtonText,
-  confirmButtonText,
-  onCancel,
-  onConfirm,
-}) => {
-  const escapeKeyHandler = () => onCancel();
-  const enterKeyHandler = () => onConfirm();
-
+const DeleteCommentConfirmationModal = ({ onCancel, onConfirm }) => {
   const keyupHandler = useCallback((event) => {
     if (event.key === "Escape") {
-      escapeKeyHandler();
-    }
-
-    if (event.key === "Enter") {
-      enterKeyHandler();
+      onCancel();
+    } else if (event.key === "Enter") {
+      onConfirm();
     }
   });
 
@@ -29,31 +16,28 @@ const ConfirmationModal = ({
   });
 
   return (
-    <div
-      className={`fixed inset-0 bg-gray-dark/60 ${
-        !show && "hidden"
-      } transition`}
-    >
+    <div className="fixed inset-0 bg-gray-dark/60 transition">
       <div className="grid h-full w-full place-content-center">
         <div className="m-4 max-w-sm rounded-md bg-white p-8">
-          <header className="">
-            <h1 className="text-lg font-bold text-gray-dark">
-              {title || Confirmation}
-            </h1>
+          <header>
+            <h1 className="text-lg font-bold text-gray-dark">Delete comment</h1>
           </header>
-          {body && <main className="mt-4 tracking-wide">{body}</main>}
+          <main className="mt-4 tracking-wide">
+            Are you sure want to delete this comment? This will remove the
+            comment and can't be undone.
+          </main>
           <footer className="mt-4 flex items-center justify-between">
             <button
               className="rounded-md bg-gray px-6 py-2 font-bold uppercase text-white"
               onClick={onCancel}
             >
-              {cancelButtonText || "Cancel"}
+              No, Cancel
             </button>
             <button
               className="rounded-md bg-red px-6 py-2 font-bold uppercase text-white"
               onClick={onConfirm}
             >
-              {confirmButtonText || "Confirm"}
+              Yes, Delete
             </button>
           </footer>
         </div>
@@ -62,4 +46,4 @@ const ConfirmationModal = ({
   );
 };
 
-export default ConfirmationModal;
+export default DeleteCommentConfirmationModal;

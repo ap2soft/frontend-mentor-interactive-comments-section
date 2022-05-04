@@ -99,11 +99,24 @@ const storeVoteForComment = (commentId, author, vote) => {
   setItem("votes", votes);
 };
 
-export const deleteComment = (commentId) => {
-  // Delete all relpies comments recursively
-  getRepliesFor(commentId).forEach(({ id }) => deleteComment(id));
+export const deleteComment = ({ commentId, parentCommentId }) => {
+  if (parentCommentId) {
+    const parentComment = getComments().find(
+      ({ id }) => id === parentCommentId
+    );
 
-  // Delete the comment
+    return storeComments([
+      // All comments except the parent comment
+      ...getComments().filter(({ id }) => id !== parentComment.id),
+      // The parent comment, but without the reply
+      {
+        ...parentComment,
+        replies: parentComment.replies.filter(({ id }) => id !== commentId),
+      },
+    ]);
+  }
+
+  // All comments except the comment
   storeComments(getComments().filter(({ id }) => id !== commentId));
 };
 
