@@ -189,7 +189,9 @@ export default function Comment({
             canManage={isTheAuthor}
             editHandler={startEditing}
             replyHandler={() => {}}
-            deleteHandler={() => {}}
+            deleteHandler={() =>
+              onDelete({ commentId: comment.id, parentCommentId })
+            }
           />
         </div>
       </div>
