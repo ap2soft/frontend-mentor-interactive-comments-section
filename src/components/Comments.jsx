@@ -26,13 +26,13 @@ export default function Comments() {
   });
 
   //#region Send comment
-  const sendHandler = ({ context, originalCommentId, replyingTo }) => {
+  const sendHandler = ({ content, originalCommentId, replyingTo }) => {
     if (originalCommentId) {
       // TODO: Reply
     } else {
       sendComment({
         id: Date.now(),
-        context,
+        content,
         user: currentUser,
         score: 0,
         replies: [],
