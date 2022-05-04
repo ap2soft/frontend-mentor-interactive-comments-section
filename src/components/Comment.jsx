@@ -143,9 +143,20 @@ export default function Comment({
                   onChange={(event) => setContent(event.target.value)}
                   onKeyUp={onKeyUp}
                 ></textarea>
-                <div className="flex justify-end gap-4">
-                  <button onClick={() => setEditing(false)}>Cancel</button>
-                  <button type="submit">Update</button>
+                <div className="mt-4 flex justify-end gap-4">
+                  <button
+                    className="text-blue-light underline transition hover:text-blue"
+                    onClick={() => setEditing(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="rounded-md bg-blue px-6 py-3 font-bold uppercase text-white transition hover:bg-blue-light disabled:cursor-not-allowed disabled:bg-blue-light"
+                    disabled={!content.length}
+                  >
+                    Update
+                  </button>
                 </div>
               </form>
             );
