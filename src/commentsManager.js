@@ -26,20 +26,29 @@ export const getCurrentUser = () => getItem("currentUser", "{}");
 export const getVotesForComment = (commentId) =>
   getItem("votes", "[]").filter((vote) => vote.commentId === commentId);
 
-export const sendComment = (comment) =>
-  storeComments([...getComments(), comment]);
+export const sendComment = (comment, parentCommentId) => {
+  const comments = getComments();
+
+  if (parentCommentId) {
+    // TODO: Extract getCommentById(id)
+    const parentComment = comments.find(({ id }) => id === parentCommentId);
+    parentComment.replies.push(comment);
+
+    storeComments([
+      ...comments.filter(({ id }) => id !== parentComment.id),
+      parentComment,
+    ]);
+  } else {
+    storeComments([...comments, comment]);
+  }
+};
 
 export const updateComment = (content, commentId, parentCommentId) => {
   const allComments = getComments();
   if (parentCommentId) {
     // Update reply with ID of commentId of the parent comment with ID = replyingTo
-    console.log(
-      `updating reply #${commentId} of parent comment #${parentCommentId}`
-    );
     const parentComment = allComments.find(({ id }) => id === parentCommentId);
-    console.log(parentComment.id);
     const reply = parentComment.replies.find(({ id }) => id === commentId);
-    console.log(reply.id);
     parentComment.replies = [
       ...parentComment.replies.filter(({ id }) => id !== reply.id),
       { ...reply, content },

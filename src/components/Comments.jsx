@@ -13,6 +13,7 @@ import DeleteCommentConfirmationModal from "./DeleteCommentConfirmationModal";
 
 export default function Comments() {
   const currentUser = getCurrentUser();
+
   const [comments, setComments] = useState(getComments());
 
   useEffect(() => {
@@ -26,21 +27,24 @@ export default function Comments() {
   });
 
   //#region Send comment
-  const sendHandler = ({ content, originalCommentId, replyingTo }) => {
-    if (originalCommentId) {
-      // TODO: Reply
-    } else {
-      sendComment({
-        id: Date.now(),
-        content,
-        user: currentUser,
-        score: 0,
-        replies: [],
-        createdAt: new Date(),
-      });
+  const sendHandler = ({ content, replyToCommentId, replyingTo }) => {
+    let comment = {
+      id: Date.now(),
+      user: currentUser,
+      score: 0,
+      createdAt: new Date(),
+      content,
+    };
 
-      reloadComments();
+    if (replyToCommentId) {
+      comment = { ...comment, replyingTo };
+    } else {
+      comment = { ...comment, replies: [] };
     }
+
+    sendComment(comment, replyToCommentId);
+
+    reloadComments();
   };
   //#endregion
 
@@ -57,7 +61,7 @@ export default function Comments() {
   const reloadComments = () => setComments(getComments());
 
   return (
-    <div>
+    <div className="mx-auto max-w-2xl">
       <div className="grid gap-4">
         {comments.map((comment) => {
           return (
@@ -67,18 +71,21 @@ export default function Comments() {
                   comment={comment}
                   onUpdate={reloadComments}
                   onDelete={setCommentToDelete}
+                  onReply={sendHandler}
                 />
                 <Replies
                   comment={comment}
+                  currentUser={currentUser}
                   onUpdate={reloadComments}
                   onDelete={setCommentToDelete}
+                  onReply={sendHandler}
                 />
               </div>
             </div>
           );
         })}
         <div className="mt-4">
-          <NewCommentForm submitButtonText="Send" onSend={sendHandler} />
+          <NewCommentForm currentUser={currentUser} onSend={sendHandler} />
         </div>
       </div>
 

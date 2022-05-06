@@ -1,6 +1,6 @@
 import Reply from "./Reply";
 
-const Replies = ({ comment, onUpdate, onDelete }) => {
+const Replies = ({ comment, currentUser, onUpdate, onDelete, onReply }) => {
   if (!comment.replies.length) return;
 
   return (
@@ -8,10 +8,12 @@ const Replies = ({ comment, onUpdate, onDelete }) => {
       {comment.replies.map((reply) => (
         <div key={reply.id}>
           <Reply
-            reply={reply}
+            comment={reply}
+            currentUser={currentUser}
             parentCommentId={comment.id}
             onUpdate={onUpdate}
             onDelete={onDelete}
+            onReply={onReply}
           />
         </div>
       ))}

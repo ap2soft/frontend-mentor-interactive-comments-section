@@ -1,12 +1,21 @@
 import Comment from "./Comment";
 
-export default function Reply({ reply, parentCommentId, onUpdate, onDelete }) {
+export default function Reply({
+  comment,
+  currentUser,
+  parentCommentId,
+  onUpdate,
+  onDelete,
+  onReply,
+}) {
   return (
     <Comment
-      comment={reply}
+      comment={comment}
+      currentUser={currentUser}
       parentCommentId={parentCommentId}
       onUpdate={onUpdate}
       onDelete={onDelete}
+      onReply={onReply}
     />
   );
 }
