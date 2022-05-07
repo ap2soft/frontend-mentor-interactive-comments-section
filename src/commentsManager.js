@@ -2,7 +2,7 @@
  * Get comments from data.json
  */
 export const reseedDatabase = async () => {
-  const data = await (await fetch("./data.json")).json();
+  const data = await (await fetch("/data.json")).json();
 
   setItem("comments", data.comments);
 
