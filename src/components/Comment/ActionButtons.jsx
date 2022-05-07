@@ -1,14 +1,5 @@
 import { IconDelete, IconEdit, IconReply } from "../Icons";
 
-const DeleteAndEditButtons = ({ deleteHandler, editHandler }) => {
-  return (
-    <div className="flex gap-4">
-      <DeleteButton onClick={deleteHandler} />
-      <EditButton onClick={editHandler} />
-    </div>
-  );
-};
-
 const DeleteButton = ({ onClick }) => {
   return (
     <button
@@ -53,11 +44,9 @@ const ActionButtons = ({
 }) => {
   if (canManage) {
     return (
-      <div className="flex">
-        <DeleteAndEditButtons
-          deleteHandler={deleteHandler}
-          editHandler={editHandler}
-        />
+      <div className="flex gap-4">
+        <DeleteButton onClick={deleteHandler} />
+        <EditButton onClick={editHandler} />
       </div>
     );
   } else {
