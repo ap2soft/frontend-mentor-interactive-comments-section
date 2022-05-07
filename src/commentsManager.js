@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-
 /**
  * Get comments from data.json
  */
@@ -9,6 +7,8 @@ export const reseedDatabase = async () => {
   setItem("comments", data.comments);
 
   setItem("currentUser", data.currentUser);
+
+  setItem("votes", []);
 };
 
 export const getComments = () =>
@@ -17,7 +17,9 @@ export const getComments = () =>
   );
 
 export const getRepliesFor = (commentId) =>
-  getComments().filter(({ replyTo }) => replyTo === commentId);
+  getComments()
+    .filter(({ replyTo }) => replyTo === commentId)
+    .sort((a, b) => (a.createdAt > b.createdAt ? 1 : -1));
 
 export const getUsers = () => getItem("users", "[]");
 
