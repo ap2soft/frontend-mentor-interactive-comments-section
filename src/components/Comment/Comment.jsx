@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Card } from "../Card";
 import { format } from "timeago.js";
+import { Card } from "../Card";
 import Avatar from "../User/Avatar";
 import Votes from "./Votes";
 import ActionButtons from "./ActionButtons";
@@ -67,7 +67,7 @@ export default function Comment({
   //#region Upvote
   const [upvoted, setUpvoted] = useState(currentUserUpvotedComment(comment.id));
 
-  const [upvotesCount, setUpvotesCount] = useState(getUpvotesCount());
+  const [upvotesCount, setUpvotesCount] = useState(getUpvotesCount(comment.id));
 
   const upvoteHandler = () => {
     upvoteComment(comment.id, comment.user.username);
@@ -80,7 +80,9 @@ export default function Comment({
     currentUserDownvotedComment(comment.id)
   );
 
-  const [downvotesCount, setDownvotesCount] = useState(getUpvotesCount());
+  const [downvotesCount, setDownvotesCount] = useState(
+    getDownvotesCount(comment.id)
+  );
 
   const downvoteHandler = () => {
     downvoteComment(comment.id, comment.user.username);

@@ -109,16 +109,16 @@ export const getUpvotesCount = (commentId) =>
 export const getDownvotesCount = (commentId) =>
   getVotesForComment(commentId).filter(({ vote }) => vote === "down").length;
 
-export const upvoteComment = (commentId) => {
-  storeVoteForComment(commentId, getCurrentUser().username, "up");
-};
+export const upvoteComment = (commentId) =>
+  storeVoteForComment(commentId, "up");
 
-export const downvoteComment = (commentId) => {
-  storeVoteForComment(commentId, getCurrentUser().username, "down");
-};
+export const downvoteComment = (commentId) =>
+  storeVoteForComment(commentId, "down");
 
-const storeVoteForComment = (commentId, author, vote) => {
+const storeVoteForComment = (commentId, vote) => {
   let votes = getItem("votes", "[]");
+  const author = getCurrentUser().username;
+
   const currentVote = votes.find(
     (v) => v.commentId === commentId && v.author === author
   );
