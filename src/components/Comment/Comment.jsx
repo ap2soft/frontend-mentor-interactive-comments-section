@@ -1,150 +1,230 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Card } from "../Card";
-import { Avatar } from "../User/Avatar";
 import { format } from "timeago.js";
-import { Votes } from "./Votes";
-import { Buttons as ActionButtons } from "./Actions/Buttons";
-import FormSubmitButton from "./FormSubmitButton";
-import ReplyForm from "./CommentFormentForm";
+import Avatar from "../User/Avatar";
+import Votes from "./Votes";
+import ActionButtons from "./ActionButtons";
+import ReplyForm from "./Forms/ReplyForm";
 import {
+  getCurrentUser,
   upvoteComment,
   downvoteComment,
+  currentUserUpvotedComment,
+  currentUserDownvotedComment,
   getVotesForComment,
-  getUsers,
+  updateComment,
 } from "../../commentsManager";
 
-const Comment = ({
+export default function Comment({
   comment,
-  currentUser,
-  replyHandler,
-  updateHandler,
-  deleteHandler,
-}) => {
-  const [commentBody, setCommentBody] = useState(comment.body);
+  parentCommentId,
+  onUpdate,
+  onDelete,
+  onReply,
+}) {
+  const isLegacyDateFormat = isNaN(Date.parse(comment.createdAt));
 
-  const [votes, setVotes] = useState(getVotesForComment(comment.id));
-  const currentUserUpvoted = () =>
-    votes.find(
-      ({ authorId, vote }) => authorId === currentUser.id && vote === "up"
-    ) !== undefined;
-  const currentUserDownvoted = () =>
-    votes.find(
-      ({ authorId, vote }) => authorId === currentUser.id && vote === "down"
-    ) !== undefined;
+  const currentUser = getCurrentUser();
+
+  const isTheAuthor = comment.user.username === currentUser.username;
+
+  //#region Vote logic
+  //#region Upvote
+  const [upvoted, setUpvoted] = useState(currentUserUpvotedComment(comment.id));
+
+  const getUpvotesCount = () =>
+    getVotesForComment(comment.id).filter(({ vote }) => vote === "up").length;
+
+  const [upvotesCount, setUpvotesCount] = useState(getUpvotesCount());
+
   const upvoteHandler = () => {
-    upvoteComment(comment.id, currentUser.id);
-    setVotes(getVotesForComment(comment.id));
+    upvoteComment(comment.id, comment.user.username);
+    refreshVotes();
   };
+  //#endregion
+
+  //#region Downvote
+  const [downvoted, setDownvoted] = useState(
+    currentUserDownvotedComment(comment.id)
+  );
+
+  const getDownvotesCount = () =>
+    getVotesForComment(comment.id).filter(({ vote }) => vote === "down").length;
+
+  const [downvotesCount, setDownvotesCount] = useState(getUpvotesCount());
+
   const downvoteHandler = () => {
-    downvoteComment(comment.id, currentUser.id);
-    setVotes(getVotesForComment(comment.id));
+    downvoteComment(comment.id, comment.user.username);
+    refreshVotes();
+  };
+  //#endregion
+
+  const refreshVotes = () => {
+    setUpvoted(currentUserUpvotedComment(comment.id));
+    setUpvotesCount(getUpvotesCount());
+    setDownvoted(currentUserDownvotedComment(comment.id));
+    setDownvotesCount(getDownvotesCount());
+  };
+  //#endregion Vote logic
+
+  //#region Edit comment
+  const [editing, setEditing] = useState(false);
+  const [content, setContent] = useState(comment.content);
+
+  const startEditing = () => {
+    setContent(comment.content);
+    setEditing(true);
   };
 
-  const [editing, setEditing] = useState(false);
-  const onUpdate = (event) => {
+  const updateHandler = (event) => {
     event.preventDefault();
+    updateComment(content, comment.id, parentCommentId);
     setEditing(false);
-    updateHandler({ commentId: comment.id, body: commentBody });
+    onUpdate();
   };
+
   const onKeyUp = (event) => {
-    if (event.ctrlKey && event.keyCode === 13) {
-      onUpdate(event);
+    if (event.ctrlKey && event.key === "Enter") {
+      updateHandler(event);
     }
   };
+  //#endregion
 
+  //#region Replying
   const [replying, setReplying] = useState(false);
-  const onReply = ({ body }) => {
-    setReplying(false);
-    replyHandler({ replyTo: comment.id, body });
-  };
 
-  const author = getUsers().find(({ id }) => id === comment.authorId);
-  const isTheAuthor = author.id === currentUser.id;
+  const replyHandler = ({ content }) => {
+    onReply({
+      content,
+      replyToCommentId: parentCommentId || comment.id,
+      replyingTo: comment.user.username,
+    });
+
+    setReplying(false);
+  };
+  //#endregion
 
   return (
-    <div>
-      <Card>
-        <div className="flex flex-col tablet:flex-row">
+    <div className="grid gap-4">
+      <Card className="flex items-start gap-4">
+        <div className="hidden tablet:block">
           <Votes
-            className="hidden tablet:block"
-            upvotesCount={votes.filter(({ vote }) => vote === "up").length}
-            downvotesCount={votes.filter(({ vote }) => vote === "down").length}
-            upvoted={currentUserUpvoted()}
-            downvoted={currentUserDownvoted()}
+            initialScore={comment.score}
+            upvotesCount={upvotesCount}
+            downvotesCount={downvotesCount}
+            upvoted={upvoted}
+            downvoted={downvoted}
             onUpvote={upvoteHandler}
             onDownvote={downvoteHandler}
           />
-          <div className="tablet:ml-6 tablet:flex-1">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <Avatar user={author} />
-                <span className="font-bold text-gray-dark">
-                  {author.username}
+        </div>
+        <div className="grid w-full gap-4">
+          <div className="flex justify-between">
+            <div className="flex items-center gap-4">
+              <Avatar user={comment.user} />
+              <span className="font-bold text-gray">
+                {comment.user.username}
+              </span>
+              {isTheAuthor && (
+                <span className="h-6 rounded bg-blue px-2 text-sm lowercase text-white">
+                  you
                 </span>
-                {isTheAuthor && (
-                  <span className="h-6 rounded bg-blue px-2 text-sm lowercase text-white">
-                    you
-                  </span>
-                )}
-                <time dateTime={comment.createdAt}>
-                  {format(comment.createdAt)}
-                </time>
-              </div>
+              )}
+              <time
+                className="text-gray/600"
+                dateTime={isLegacyDateFormat ? "" : comment.createdAt}
+              >
+                {isLegacyDateFormat
+                  ? comment.createdAt
+                  : format(comment.createdAt)}
+              </time>
+            </div>
+            <div className="hidden tablet:block">
               <ActionButtons
-                className="hidden tablet:block"
                 canManage={isTheAuthor}
-                editHandler={() => setEditing(true)}
+                editHandler={startEditing}
                 replyHandler={() => setReplying(true)}
-                deleteHandler={deleteHandler}
+                deleteHandler={() =>
+                  onDelete({ commentId: comment.id, parentCommentId })
+                }
               />
             </div>
-            <div className="mt-4">
-              {editing ? (
-                <form onSubmit={onUpdate}>
+          </div>
+
+          {/* Show content or Update content form  */}
+          {(() => {
+            if (editing) {
+              return (
+                <form onSubmit={updateHandler}>
                   <textarea
                     className="w-full resize-none rounded-md border border-gray-light px-4 py-2 transition focus-within:border-gray hover:border-gray focus:outline-none"
-                    placeholder="Update the comment..."
+                    placeholder="Edit comment..."
                     rows="3"
-                    value={commentBody}
-                    onChange={(event) => setCommentBody(event.target.value)}
+                    autoFocus={true}
+                    value={content}
+                    onChange={(event) => setContent(event.target.value)}
                     onKeyUp={onKeyUp}
                   ></textarea>
-                  <div className="flex justify-end">
-                    <FormSubmitButton disabled={!commentBody.length}>
+                  <div className="mt-4 flex justify-end gap-4">
+                    <button
+                      className="text-blue-light underline transition hover:text-blue"
+                      onClick={() => setEditing(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="rounded-md bg-blue px-6 py-3 font-bold uppercase text-white transition hover:bg-blue-light disabled:cursor-not-allowed disabled:bg-blue-light"
+                      disabled={!content.length}
+                    >
                       Update
-                    </FormSubmitButton>
+                    </button>
                   </div>
                 </form>
-              ) : (
-                <div>{commentBody}</div>
-              )}
-            </div>
+              );
+            }
+
+            // Show comment content
+            return (
+              <div>
+                {comment.replyingTo && (
+                  <span className="mr-1 font-bold text-blue">
+                    @{comment.replyingTo}
+                  </span>
+                )}
+                {comment.content}
+              </div>
+            );
+          })()}
+
+          <div className="flex items-center justify-between tablet:hidden">
+            <Votes
+              initialScore={comment.score}
+              upvotesCount={upvotesCount}
+              downvotesCount={downvotesCount}
+              upvoted={upvoted}
+              downvoted={downvoted}
+              onUpvote={upvoteHandler}
+              onDownvote={downvoteHandler}
+            />
+            <ActionButtons
+              canManage={isTheAuthor}
+              editHandler={startEditing}
+              replyHandler={() => setReplying(true)}
+              deleteHandler={() =>
+                onDelete({ commentId: comment.id, parentCommentId })
+              }
+            />
           </div>
         </div>
-        <div className="mt-4 flex justify-between tablet:hidden">
-          <Votes
-            upvotesCount={votes.filter(({ vote }) => vote === "up").length}
-            downvotesCount={votes.filter(({ vote }) => vote === "down").length}
-            upvoted={currentUserUpvoted()}
-            downvoted={currentUserDownvoted()}
-            onUpvote={upvoteHandler}
-            onDownvote={downvoteHandler}
-          />
-          <ActionButtons
-            canManage={isTheAuthor}
-            editHandler={() => setEditing(true)}
-            replyHandler={() => setReplying(true)}
-            deleteHandler={deleteHandler}
-          />
-        </div>
       </Card>
-      {replying && (
-        <div className="mt-4 border-l border-blue-light pl-4 tablet:ml-10 tablet:pl-8">
-          <ReplyForm onSend={onReply} onCancel={() => setReplying(false)} />
-        </div>
-      )}
+
+      <ReplyForm
+        show={replying}
+        currentUser={currentUser}
+        onSend={replyHandler}
+        onCancel={() => setReplying(false)}
+      />
     </div>
   );
-};
-
-export default Comment;
+}

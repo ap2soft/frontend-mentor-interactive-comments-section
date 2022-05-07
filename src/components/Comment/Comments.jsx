@@ -5,11 +5,11 @@ import {
   reseedDatabase,
   sendComment,
   deleteComment,
-} from "../commentsManager";
+} from "../../commentsManager";
 import Comment from "./Comment";
 import Replies from "./Replies";
-import NewCommentForm from "./NewCommentForm";
-import DeleteCommentConfirmationModal from "./DeleteCommentConfirmationModal";
+import NewCommentForm from "./Forms/NewCommentForm";
+import DeleteCommentConfirmationModal from "./Modals/DeleteCommentConfirmationModal";
 
 export default function Comments() {
   const currentUser = getCurrentUser();

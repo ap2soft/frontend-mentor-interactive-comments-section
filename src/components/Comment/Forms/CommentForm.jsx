@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { getCurrentUser } from "../commentsManager";
-import Avatar from "./Avatar";
-import { Card } from "./Card";
+import Avatar from "../../User/Avatar";
+import { Card } from "../../Card";
 
 const CommentForm = ({
   currentUser,
@@ -47,7 +46,7 @@ const CommentForm = ({
           onKeyUp={onKeyUp}
         ></textarea>
         <div className="flex items-center justify-between">
-          <Avatar user={getCurrentUser()} className="tablet:hidden" />
+          <Avatar user={currentUser} className="tablet:hidden" />
           <div className="flex flex-row-reverse gap-4 tablet:flex-col">
             <button
               type="submit"

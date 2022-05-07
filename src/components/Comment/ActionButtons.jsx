@@ -1,4 +1,4 @@
-import { IconDelete, IconEdit, IconReply } from "./Icons";
+import { IconDelete, IconEdit, IconReply } from "../Icons";
 
 const ActionButtons = ({
   canManage,
