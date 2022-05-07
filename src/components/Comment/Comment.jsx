@@ -7,11 +7,12 @@ import ActionButtons from "./ActionButtons";
 import ReplyForm from "./Forms/ReplyForm";
 import {
   getCurrentUser,
+  getUpvotesCount,
+  getDownvotesCount,
   upvoteComment,
   downvoteComment,
   currentUserUpvotedComment,
   currentUserDownvotedComment,
-  getVotesForComment,
   updateComment,
 } from "../../commentsManager";
 
@@ -32,9 +33,6 @@ export default function Comment({
   //#region Upvote
   const [upvoted, setUpvoted] = useState(currentUserUpvotedComment(comment.id));
 
-  const getUpvotesCount = () =>
-    getVotesForComment(comment.id).filter(({ vote }) => vote === "up").length;
-
   const [upvotesCount, setUpvotesCount] = useState(getUpvotesCount());
 
   const upvoteHandler = () => {
@@ -48,9 +46,6 @@ export default function Comment({
     currentUserDownvotedComment(comment.id)
   );
 
-  const getDownvotesCount = () =>
-    getVotesForComment(comment.id).filter(({ vote }) => vote === "down").length;
-
   const [downvotesCount, setDownvotesCount] = useState(getUpvotesCount());
 
   const downvoteHandler = () => {
@@ -61,9 +56,9 @@ export default function Comment({
 
   const refreshVotes = () => {
     setUpvoted(currentUserUpvotedComment(comment.id));
-    setUpvotesCount(getUpvotesCount());
+    setUpvotesCount(getUpvotesCount(comment.id));
     setDownvoted(currentUserDownvotedComment(comment.id));
-    setDownvotesCount(getDownvotesCount());
+    setDownvotesCount(getDownvotesCount(comment.id));
   };
   //#endregion Vote logic
 

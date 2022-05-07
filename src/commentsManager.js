@@ -21,18 +21,13 @@ export const getRepliesFor = (commentId) =>
     .filter(({ replyTo }) => replyTo === commentId)
     .sort((a, b) => (a.createdAt > b.createdAt ? 1 : -1));
 
-export const getUsers = () => getItem("users", "[]");
-
 export const getCurrentUser = () => getItem("currentUser", "{}");
 
-export const getVotesForComment = (commentId) =>
-  getItem("votes", "[]").filter((vote) => vote.commentId === commentId);
-
+//#region Manage Comment
 export const sendComment = (comment, parentCommentId) => {
   const comments = getComments();
 
   if (parentCommentId) {
-    // TODO: Extract getCommentById(id)
     const parentComment = comments.find(({ id }) => id === parentCommentId);
     parentComment.replies.push(comment);
 
@@ -46,29 +41,52 @@ export const sendComment = (comment, parentCommentId) => {
 };
 
 export const updateComment = (content, commentId, parentCommentId) => {
-  const allComments = getComments();
+  const comments = getComments();
   if (parentCommentId) {
     // Update reply with ID of commentId of the parent comment with ID = replyingTo
-    const parentComment = allComments.find(({ id }) => id === parentCommentId);
+    const parentComment = comments.find(({ id }) => id === parentCommentId);
     const reply = parentComment.replies.find(({ id }) => id === commentId);
     parentComment.replies = [
       ...parentComment.replies.filter(({ id }) => id !== reply.id),
       { ...reply, content },
     ];
     storeComments([
-      ...allComments.filter(({ id }) => id !== parentComment.id),
+      ...comments.filter(({ id }) => id !== parentComment.id),
       parentComment,
     ]);
   } else {
     // Update comment with ID of commentId
-    const comment = allComments.find(({ id }) => id === commentId);
+    const comment = comments.find(({ id }) => id === commentId);
     storeComments([
-      ...allComments.filter(({ id }) => id !== commentId),
+      ...comments.filter(({ id }) => id !== commentId),
       { ...comment, content },
     ]);
   }
 };
 
+export const deleteComment = ({ commentId, parentCommentId }) => {
+  const comments = getComments();
+
+  if (parentCommentId) {
+    const parentComment = comments.find(({ id }) => id === parentCommentId);
+
+    return storeComments([
+      // All comments except the parent comment
+      ...comments.filter(({ id }) => id !== parentComment.id),
+      // The parent comment, but without the reply
+      {
+        ...parentComment,
+        replies: parentComment.replies.filter(({ id }) => id !== commentId),
+      },
+    ]);
+  }
+
+  // All comments except the comment
+  storeComments(comments.filter(({ id }) => id !== commentId));
+};
+//#endregion
+
+//#region Votes
 export const currentUserUpvotedComment = (commentId) =>
   currentUsersVoteForComment(commentId)?.vote === "up";
 
@@ -81,6 +99,15 @@ export const currentUsersVoteForComment = (commentId) => {
     ({ author }) => author === currentUser.username
   );
 };
+
+const getVotesForComment = (commentId) =>
+  getItem("votes", "[]").filter((vote) => vote.commentId === commentId);
+
+export const getUpvotesCount = (commentId) =>
+  getVotesForComment(commentId).filter(({ vote }) => vote === "up").length;
+
+export const getDownvotesCount = (commentId) =>
+  getVotesForComment(commentId).filter(({ vote }) => vote === "down").length;
 
 export const upvoteComment = (commentId) => {
   storeVoteForComment(commentId, getCurrentUser().username, "up");
@@ -109,28 +136,9 @@ const storeVoteForComment = (commentId, author, vote) => {
 
   setItem("votes", votes);
 };
+//#endregion
 
-export const deleteComment = ({ commentId, parentCommentId }) => {
-  if (parentCommentId) {
-    const parentComment = getComments().find(
-      ({ id }) => id === parentCommentId
-    );
-
-    return storeComments([
-      // All comments except the parent comment
-      ...getComments().filter(({ id }) => id !== parentComment.id),
-      // The parent comment, but without the reply
-      {
-        ...parentComment,
-        replies: parentComment.replies.filter(({ id }) => id !== commentId),
-      },
-    ]);
-  }
-
-  // All comments except the comment
-  storeComments(getComments().filter(({ id }) => id !== commentId));
-};
-
+//#region Local Storage
 const getItem = (name, defaultValue) =>
   JSON.parse(localStorage.getItem(name) || defaultValue);
 
@@ -139,3 +147,4 @@ const setItem = (name, value) =>
 
 const storeComments = (comments) =>
   localStorage.setItem("comments", JSON.stringify(comments));
+//#endregion
