@@ -65,40 +65,34 @@ export default function Comments() {
       <div className="grid gap-4">
         {comments.map((comment) => {
           return (
-            <div key={comment.id} className="">
-              <div className="grid gap-4">
-                <Comment
-                  comment={comment}
-                  onUpdate={reloadComments}
-                  onDelete={setCommentToDelete}
-                  onReply={sendHandler}
-                />
-                <Replies
-                  comment={comment}
-                  currentUser={currentUser}
-                  onUpdate={reloadComments}
-                  onDelete={setCommentToDelete}
-                  onReply={sendHandler}
-                />
-              </div>
+            <div className="grid gap-4" key={comment.id}>
+              <Comment
+                comment={comment}
+                onUpdate={reloadComments}
+                onDelete={setCommentToDelete}
+                onReply={sendHandler}
+              />
+              <Replies
+                comment={comment}
+                currentUser={currentUser}
+                onUpdate={reloadComments}
+                onDelete={setCommentToDelete}
+                onReply={sendHandler}
+              />
             </div>
           );
         })}
-        <div className="mt-4">
+
+        <div>
           <NewCommentForm currentUser={currentUser} onSend={sendHandler} />
         </div>
       </div>
 
-      {(() => {
-        if (commentToDelete.commentId) {
-          return (
-            <DeleteCommentConfirmationModal
-              onCancel={() => setCommentToDelete({})}
-              onConfirm={deleteHandler}
-            />
-          );
-        }
-      })()}
+      <DeleteCommentConfirmationModal
+        show={!!commentToDelete.commentId}
+        onCancel={() => setCommentToDelete({})}
+        onConfirm={deleteHandler}
+      />
     </div>
   );
 }

@@ -1,6 +1,10 @@
 import { useCallback, useEffect } from "react";
 
-const DeleteCommentConfirmationModal = ({ onCancel, onConfirm }) => {
+const DeleteCommentConfirmationModal = ({ show, onCancel, onConfirm }) => {
+  if (!show) {
+    return <></>;
+  }
+
   const keyupHandler = useCallback((event) => {
     if (event.key === "Escape") {
       onCancel();
