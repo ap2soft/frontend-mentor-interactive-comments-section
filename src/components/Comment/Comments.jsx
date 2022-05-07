@@ -10,6 +10,7 @@ import Comment from "./Comment";
 import Replies from "./Replies";
 import NewCommentForm from "./Forms/NewCommentForm";
 import DeleteCommentConfirmationModal from "./Modals/DeleteCommentConfirmationModal";
+import { Card } from "../Card";
 
 export default function Comments() {
   const currentUser = getCurrentUser();
@@ -24,7 +25,7 @@ export default function Comments() {
         reloadComments();
       })();
     }
-  });
+  }, []);
 
   //#region Send comment
   const sendHandler = ({ content, replyToCommentId, replyingTo }) => {
@@ -59,6 +60,12 @@ export default function Comments() {
   //#endregion
 
   const reloadComments = () => setComments(getComments());
+
+  if (!comments.length) {
+    return (
+      <Card className="text-center italic text-gray">Loading comments...</Card>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-2xl">
