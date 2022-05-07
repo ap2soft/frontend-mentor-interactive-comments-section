@@ -5,16 +5,52 @@ import Avatar from "../User/Avatar";
 import Votes from "./Votes";
 import ActionButtons from "./ActionButtons";
 import ReplyForm from "./Forms/ReplyForm";
+import UpdateCommentForm from "./Forms/UpdateCommentForm";
 import {
   getCurrentUser,
-  getUpvotesCount,
-  getDownvotesCount,
-  upvoteComment,
-  downvoteComment,
-  currentUserUpvotedComment,
-  currentUserDownvotedComment,
   updateComment,
+  getUpvotesCount,
+  currentUserUpvotedComment,
+  upvoteComment,
+  getDownvotesCount,
+  currentUserDownvotedComment,
+  downvoteComment,
 } from "../../commentsManager";
+
+const CurrentUserBadge = ({ show }) => {
+  if (show) {
+    return (
+      <span className="h-6 rounded bg-blue px-2 text-sm lowercase text-white">
+        you
+      </span>
+    );
+  }
+};
+
+const DateTimeInfo = ({ date, className }) => {
+  const isLegacyDateFormat = isNaN(Date.parse(date));
+
+  return (
+    <time className={className} dateTime={isLegacyDateFormat ? "" : date}>
+      {isLegacyDateFormat ? date : format(date)}
+    </time>
+  );
+};
+
+const CommentContent = ({ show, comment }) => {
+  if (show) {
+    return (
+      <div>
+        {comment.replyingTo && (
+          <span className="mr-1 font-bold text-blue">
+            @{comment.replyingTo}
+          </span>
+        )}
+        {comment.content}
+      </div>
+    );
+  }
+};
 
 export default function Comment({
   comment,
@@ -23,8 +59,6 @@ export default function Comment({
   onDelete,
   onReply,
 }) {
-  const isLegacyDateFormat = isNaN(Date.parse(comment.createdAt));
-
   const currentUser = getCurrentUser();
 
   const isTheAuthor = comment.user.username === currentUser.username;
@@ -64,24 +98,11 @@ export default function Comment({
 
   //#region Edit comment
   const [editing, setEditing] = useState(false);
-  const [content, setContent] = useState(comment.content);
 
-  const startEditing = () => {
-    setContent(comment.content);
-    setEditing(true);
-  };
-
-  const updateHandler = (event) => {
-    event.preventDefault();
+  const updateHandler = (content) => {
     updateComment(content, comment.id, parentCommentId);
     setEditing(false);
     onUpdate();
-  };
-
-  const onKeyUp = (event) => {
-    if (event.ctrlKey && event.key === "Enter") {
-      updateHandler(event);
-    }
   };
   //#endregion
 
@@ -120,24 +141,13 @@ export default function Comment({
               <span className="font-bold text-gray">
                 {comment.user.username}
               </span>
-              {isTheAuthor && (
-                <span className="h-6 rounded bg-blue px-2 text-sm lowercase text-white">
-                  you
-                </span>
-              )}
-              <time
-                className="text-gray/600"
-                dateTime={isLegacyDateFormat ? "" : comment.createdAt}
-              >
-                {isLegacyDateFormat
-                  ? comment.createdAt
-                  : format(comment.createdAt)}
-              </time>
+              <CurrentUserBadge show={isTheAuthor} />
+              <DateTimeInfo className="text-gray/60" date={comment.createdAt} />
             </div>
             <div className="hidden tablet:block">
               <ActionButtons
                 canManage={isTheAuthor}
-                editHandler={startEditing}
+                editHandler={() => setEditing(true)}
                 replyHandler={() => setReplying(true)}
                 deleteHandler={() =>
                   onDelete({ commentId: comment.id, parentCommentId })
@@ -146,51 +156,13 @@ export default function Comment({
             </div>
           </div>
 
-          {/* Show content or Update content form  */}
-          {(() => {
-            if (editing) {
-              return (
-                <form onSubmit={updateHandler}>
-                  <textarea
-                    className="w-full resize-none rounded-md border border-gray-light px-4 py-2 transition focus-within:border-gray hover:border-gray focus:outline-none"
-                    placeholder="Edit comment..."
-                    rows="3"
-                    autoFocus={true}
-                    value={content}
-                    onChange={(event) => setContent(event.target.value)}
-                    onKeyUp={onKeyUp}
-                  ></textarea>
-                  <div className="mt-4 flex justify-end gap-4">
-                    <button
-                      className="text-blue-light underline transition hover:text-blue"
-                      onClick={() => setEditing(false)}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      className="rounded-md bg-blue px-6 py-3 font-bold uppercase text-white transition hover:bg-blue-light disabled:cursor-not-allowed disabled:bg-blue-light"
-                      disabled={!content.length}
-                    >
-                      Update
-                    </button>
-                  </div>
-                </form>
-              );
-            }
-
-            // Show comment content
-            return (
-              <div>
-                {comment.replyingTo && (
-                  <span className="mr-1 font-bold text-blue">
-                    @{comment.replyingTo}
-                  </span>
-                )}
-                {comment.content}
-              </div>
-            );
-          })()}
+          <CommentContent show={!editing} comment={comment} />
+          <UpdateCommentForm
+            show={isTheAuthor && editing}
+            defaultContent={comment.content}
+            onUpdate={updateHandler}
+            onCancel={() => setEditing(false)}
+          />
 
           <div className="flex items-center justify-between tablet:hidden">
             <Votes
@@ -204,7 +176,7 @@ export default function Comment({
             />
             <ActionButtons
               canManage={isTheAuthor}
-              editHandler={startEditing}
+              editHandler={() => setEditing(true)}
               replyHandler={() => setReplying(true)}
               deleteHandler={() =>
                 onDelete({ commentId: comment.id, parentCommentId })
